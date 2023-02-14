@@ -8,19 +8,19 @@
   - Assignment 2 Lua module
 --]]
 
+--[[***********************************]]--
 --[[***          Section A          ***]]--
+--[[***********************************]]--
 
 	-- Secret Message: Be VERY sure to drink you Ovaltine.
 
+--[[***********************************]]--
 --[[***          Section B          ***]]--
+--[[***********************************]]--
+
 
 -- Module table 
 local pa2 = {} 
-
-
---[[***********************************]]--
---[[***      Exported Functions     ***]]--
---[[***********************************]]--
 
 -- mapTable
 -- Takes in a one-paraperter function and a table. Returns a new table of key-value pairs
@@ -37,10 +37,9 @@ function pa2.mapTable(func, tbl)
 	return output
 end
 
-
 -- concatMax
 -- Takes a string and integer. Returns a sring concatanation of as many copies of the given
---   	string as possible without exceeding a lenght greater than the given integer.
+--   	string as possible without exceeding a length greater than the given integer.
 -- Exported
 function pa2.concatMax(str, max)
 
@@ -90,16 +89,31 @@ end
 --  	reverse of the given string starting at a zero length string, increasing in length until 
 --  	it yeilds the full reverse of the given string.
 -- Exported
-function pa2.backSubs(temp)
-	return nil
+function pa2.backSubs(str)
+    
+    coroutine.yield("")
+
+    -- Reverse input string
+    local revStr = ""
+    local len = string.len(str)
+
+    while string.len(revStr) < string.len(str) do
+        revStr = revStr .. string.sub(str, len,len)
+        len = len -1 
+    end
+
+    -- Iterate through possible lengths
+    for i=0, string.len(revStr)-1, 1 do 
+        -- Iterate through possible start possitions
+        for x=1, string.len(revStr) , 1 do
+        
+            -- Verify that the substrings are of valid length, if not then break out of the loop
+            if string.len(revStr) < x+i then break end 
+            
+            coroutine.yield(string.sub(revStr, x,x+i))
+        end
+    end
 end
-
-
---[[***********************************]]--
---[[***   Non-Exported Functions    ***]]--
---[[***********************************]]--
-
--- All declarations after this point must be pre-fixed with "local"
 
 -- Return the module, so it is usable by client code.
 return pa2
