@@ -32,7 +32,6 @@ function pa2.mapTable(func, tbl)
         
     for key, val in pairs(tbl) do
        output[key] = func(val)
-       -- table.insert(output, [key]=func(val))
     end
     
 	return output
@@ -59,8 +58,31 @@ end
 --  	through one or more integers. These are enteries in the collatz sequesnce starting at 
 --  	the given integer.
 -- Exported
-function pa2.collatz(temp)
-	return nil
+function pa2.collatz(start)
+
+    local curnum = start
+
+    local function iter()
+    
+        local savecur = curnum -- Save current number
+        
+        if curnum > 1 then -- Determine if current number is greater than one
+            if curnum % 2 == 0 then -- Determine if it is Even, if not even then it is odd
+                curnum = curnum / 2
+                return savecur
+            else
+                curnum = (3 * curnum) + 1
+                return savecur
+                end
+        elseif curnum == 1 then -- Check to see if the current value is one. If so, return it
+            curnum = curnum - 1
+            return savecur
+        else 
+            return nil -- Exit iteration in all other cases where the value is less than 1
+            end
+        end
+
+     return iter
 end
 
 -- backSubs
