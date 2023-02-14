@@ -18,7 +18,6 @@
 --[[***          Section B          ***]]--
 --[[***********************************]]--
 
-
 -- Module table 
 local pa2 = {} 
 
@@ -29,7 +28,7 @@ local pa2 = {}
 function pa2.mapTable(func, tbl)
     
     local output = {}
-        
+    
     for key, val in pairs(tbl) do
        output[key] = func(val)
     end
@@ -45,6 +44,7 @@ function pa2.concatMax(str, max)
 
     local output = ""
 
+    -- while the total string lenght is less than the passed max, then concat the passed string
     while(string.len(output) + string.len(str) <= max) do
         output = output..str
     end
