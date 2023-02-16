@@ -35,7 +35,7 @@ lexit.MAL    = 7
 -- catnames
 -- Array of human-readable lexeme categories in as strings. The 
 --      indacies of the categories are the above numeric constants.
-lexer.catnames = {
+lexit.catnames = {
     "Keyword",
     "Identifier",
     "NumericLiteral",
