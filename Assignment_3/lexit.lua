@@ -33,8 +33,8 @@ lexit.PUNCT  = 6
 lexit.MAL    = 7
 
 -- catnames
--- Array of human-readable lexeme categories in as strings. The 
---      indacies of the categories are the above numeric constants.
+-- Array of human-readable lexeme categories in strings. The 
+--      indacies of the categories match the above numeric constants.
 lexit.catnames = {
     "Keyword",
     "Identifier",
@@ -47,8 +47,55 @@ lexit.catnames = {
 
 
 
+--[[***********************************]]--
+--[[***  Character Type Functions   ***]]--
+--[[***********************************]]--
 
 
+-- isAlpha
+-- Returns true if the character is a letter, otherwise return false
+local function isAlpha(s)
+    return false
+end
+
+-- isNum
+-- Returns true if the character is a number, otherwise return false
+local function isNum(s)
+    return false
+end
+
+-- isBlank
+-- Returns true if the character is whitespace, otherwise return false
+local function isBlank(s)
+    return false
+end
+
+-- isAscii
+-- Returns true if the character is a printable ASCII, otherwise return false
+local function isAscii(s)
+    return false
+end
+
+-- isIllegal
+-- Returns true if the character is an illegal caracter, otherwise return false
+local function isIllegal(s)
+    return false
+end
+
+
+
+--[[***********************************]]--
+--[[***            Lexer            ***]]--
+--[[***********************************]]--
+
+-- lex
+-- Lexer Description
+function lexit.lex(program)
+
+    
+
+    return nil, nil, nil
+end
 
 -- return module table
 return lexit
