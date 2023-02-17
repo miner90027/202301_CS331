@@ -51,35 +51,69 @@ lexit.catnames = {
 --[[***  Character Type Functions   ***]]--
 --[[***********************************]]--
 
+-- All of the Character-Type functions return false if the string size
+--      is anything other than a single character.
 
 -- isAlpha
 -- Returns true if the character is a letter, otherwise return false
 local function isAlpha(s)
-    return false
+    if s:len() ~= 1 then
+        return false
+    elseif s >= "A" and s <= "Z" then
+        return true
+    elseif s >= "a" and s <= "z" then
+        return true
+    else
+        return false
+    end
 end
 
 -- isNum
 -- Returns true if the character is a number, otherwise return false
 local function isNum(s)
-    return false
+    if c:len() ~= 1 then
+        return false
+    elseif s >= "0" and s <= "9" then
+        return true
+    else
+        return false
+    end
 end
 
 -- isBlank
 -- Returns true if the character is whitespace, otherwise return false
 local function isBlank(s)
-    return false
+    if s:len() ~= 1 then 
+        return false
+    elseif s == " " or s == "\t" or s == "\n" or s == "\r" or s == "\f" then
+        return true
+    else
+        return false
+    end
 end
 
 -- isAscii
 -- Returns true if the character is a printable ASCII, otherwise return false
 local function isAscii(s)
-    return false
+    if s:len() ~= 1 then
+        return false
+    elseif s >= " " and s <= "~" then
+        return true
+    else
+        return false
+    end
 end
 
 -- isIllegal
 -- Returns true if the character is an illegal caracter, otherwise return false
 local function isIllegal(s)
-    return false
+    if s:len() ~= 1 then 
+        return false
+    elseif isBlank(s) or isAscii(s) then
+        return false
+    else
+        return false
+    end
 end
 
 
