@@ -24,7 +24,7 @@ local lexit = {}
 --[[***********************************]]--
 
 -- Numeric constants representing the different lexeme categories
-lexit.KEY    = 1
+https://raw.githubusercontent.com/ggchappell/cs331-2023-01/main/lexit_test.lualexit.KEY    = 1
 lexit.ID     = 2
 lexit.NUMLIT = 3
 lexit.STRLIT = 4
@@ -126,9 +126,64 @@ end
 -- Lexer Description
 function lexit.lex(program)
 
-    
+    --[[***********************************]]--
+    --[[***         Variables           ***]]--
+    --[[***********************************]]--
 
-    return nil, nil, nil
+    local positon       -- Index of the next char in the program
+                        --      ...
+    local state         -- Current state of the state machine
+    local ch            -- Current character
+    local lexStr        -- The current lexeme
+    local cat           -- Category of lexeme, state when set to _Done
+    local hand          -- Disbatch table of State-Handler functions
+
+
+    --[[***********************************]]--
+    --[[***           States            ***]]--
+    --[[***********************************]]--
+
+
+
+    --[[***********************************]]--
+    --[[*** Character Utility Functions ***]]--
+    --[[***********************************]]--
+
+
+    --[[***********************************]]--
+    --[[***   State-Handler Functions   ***]]--
+    --[[***********************************]]--
+
+
+    
+    --[[***********************************]]--
+    --[[***       Iterator Function     ***]]--
+    --[[***********************************]]--
+
+    local function getLex(dummy1, dummy2)
+        if positon > program:len() then
+            return nil, nil
+        end
+
+        lexStr = ""
+        state = _Start
+
+        while state ~= _Done do
+            --ch = --curChar()
+            hand[state]()
+        end
+
+        --nextLex()
+        return lexStr, cat
+    end
+
+    --[[***********************************]]--
+    --[[***        Body of lex          ***]]--
+    --[[***********************************]]--
+
+    
+    --nextLex()
+    return getLex, nil, nil
 end
 
 -- return module table
