@@ -143,13 +143,34 @@ function lexit.lex(program)
     --[[***           States            ***]]--
     --[[***********************************]]--
 
-
+    local _Done = 0
+    local _Start = 1
+    
 
     --[[***********************************]]--
     --[[*** Character Utility Functions ***]]--
     --[[***********************************]]--
 
 
+    -- curChar()
+    -- Return the current character at index position in the current program
+    --      value will be either a single character string or an empty string.
+    local function curChar()
+        return program:sub(position, position)
+    end
+
+
+    -- nxtChar()
+    -- Return the next character at index position+1 in the current program
+    --      value will be either a single character string or an empty string
+    local function nxtChar()
+        return program:sug(position+1, position+1)
+    end
+
+
+    
+
+    
     --[[***********************************]]--
     --[[***   State-Handler Functions   ***]]--
     --[[***********************************]]--
@@ -169,10 +190,9 @@ function lexit.lex(program)
         state = _Start
 
         while state ~= _Done do
-            --ch = --curChar()
+            ch = curChar()
             hand[state]()
         end
-
         --nextLex()
         return lexStr, cat
     end
