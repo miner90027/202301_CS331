@@ -24,7 +24,7 @@ local lexit = {}
 --[[***********************************]]--
 
 -- Numeric constants representing the different lexeme categories
-https://raw.githubusercontent.com/ggchappell/cs331-2023-01/main/lexit_test.lualexit.KEY    = 1
+lexit.KEY    = 1
 lexit.ID     = 2
 lexit.NUMLIT = 3
 lexit.STRLIT = 4
@@ -166,10 +166,28 @@ function lexit.lex(program)
     local function nxtChar()
         return program:sug(position+1, position+1)
     end
-
-
     
+    
+    -- nxtPos()
+    -- Move the position to the next character.
+    local function nxtPos()
+        position = position + 1
+    end
 
+    -- addLex()
+    -- Add the current character to the lexeme, moving the position to the next
+    -- character.
+    local function addLex()
+        lexStr = lexStr .. curChar()
+        nxtPos()
+    end
+
+    -- nxtLex()
+    -- Skip whitespace and comments, moving the position to the beginning of the 
+    --      next lexeme or to the end of the program length
+    local function nxtLex()
+        
+    end
     
     --[[***********************************]]--
     --[[***   State-Handler Functions   ***]]--
@@ -193,7 +211,7 @@ function lexit.lex(program)
             ch = curChar()
             hand[state]()
         end
-        --nextLex()
+        nextLex()
         return lexStr, cat
     end
 
@@ -202,7 +220,7 @@ function lexit.lex(program)
     --[[***********************************]]--
 
     
-    --nextLex()
+    nxtLex()
     return getLex, nil, nil
 end
 
