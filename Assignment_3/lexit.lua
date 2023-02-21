@@ -130,7 +130,7 @@ function lexit.lex(program)
     --[[***         Variables           ***]]--
     --[[***********************************]]--
 
-    local positon       -- Index of the next char in the program
+    local position       -- Index of the next char in the program
                         --      ...
     local state         -- Current state of the state machine
     local ch            -- Current character
@@ -164,7 +164,7 @@ function lexit.lex(program)
     -- Return the next character at index position+1 in the current program
     --      value will be either a single character string or an empty string
     local function nxtChar()
-        return program:sug(position+1, position+1)
+        return program:sub(position+1, position+1)
     end
     
     
@@ -186,21 +186,70 @@ function lexit.lex(program)
     -- Skip whitespace and comments, moving the position to the beginning of the 
     --      next lexeme or to the end of the program length
     local function nxtLex()
-        
+        while true do
+            -- skip all whitespace characters
+            while isBlank(curChar()) do
+                nxtPos()
+            end
+            
+            -- Done if there are no comments
+            if curChar() ~= "-" and nxtChar() ~= "-" or curChar() ~= "#" and curChar() ~= "!" then
+                break
+            end 
+
+            nxtPos() -- drop leading - or #
+            nxtPos() -- drop leading - or !
+
+            while true do
+                if curChar() == "\n" then
+                    nxtPos() -- drop tailing new line character
+                    break
+                elseif curChar() == "" then
+                    return
+                end
+
+                nxtPos() -- drop the character inside the comment
+            end            
+        end
     end
     
     --[[***********************************]]--
     --[[***   State-Handler Functions   ***]]--
     --[[***********************************]]--
 
+    -- state _Done: lexeme is complete; this handler should not be called
+    local function hand_Done()
+        error("'_Done' state should not be handled\n")
+    end
 
+    local function hand_Start()
+        if isIllegal(ch) then
+            addLex()
+            state = _Done
+            cat = lexit.MAL
+--[[        elseif isAlpha(ch)
+            addLex()
+--]]            state = _Alpha
+        else
+            addLex()
+            state = _Done
+            cat = lexit.PUNCT
+        end
+    end
+    
+    -- Table of State-Handler Functions
+
+    hand = {
+        [_Done] = hand_Done,
+        [_Start] = hand_Start
+    }
     
     --[[***********************************]]--
     --[[***       Iterator Function     ***]]--
     --[[***********************************]]--
 
     local function getLex(dummy1, dummy2)
-        if positon > program:len() then
+        if position > program:len() then
             return nil, nil
         end
 
@@ -211,7 +260,7 @@ function lexit.lex(program)
             ch = curChar()
             hand[state]()
         end
-        nextLex()
+        nxtLex()
         return lexStr, cat
     end
 
@@ -219,7 +268,7 @@ function lexit.lex(program)
     --[[***        Body of lex          ***]]--
     --[[***********************************]]--
 
-    
+    position = 1
     nxtLex()
     return getLex, nil, nil
 end
