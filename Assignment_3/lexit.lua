@@ -71,7 +71,7 @@ end
 -- isNum
 -- Returns true if the character is a number, otherwise return false
 local function isNum(s)
-    if c:len() ~= 1 then
+    if s:len() ~= 1 then
         return false
     elseif s >= "0" and s <= "9" then
         return true
@@ -137,14 +137,30 @@ function lexit.lex(program)
     local lexStr        -- The current lexeme
     local cat           -- Category of lexeme, state when set to _Done
     local hand          -- Disbatch table of State-Handler functions
+    local keywords      -- An Array of keywords as defined in Maleo Lexeme spec
+    
+    keywords = {"and", "char", "cr", "do","else", "elseif","end","false","function",
+        "if","not","or","rand","read","return","then","true","while","write"}
 
-
+    -- checkKey()
+    -- Used to check if the given string is contained in the table of keywords
+    --      returns true if a match is found, otherwise returns false
+    local function checkKey(str)
+       for index, value in pairs(keywords) do
+            if value == str then
+                return true
+            end
+       end
+       return false
+    end
+            
     --[[***********************************]]--
     --[[***           States            ***]]--
     --[[***********************************]]--
 
     local _Done = 0
     local _Start = 1
+    local _Alpha = 2
     
 
     --[[***********************************]]--
@@ -227,13 +243,27 @@ function lexit.lex(program)
             addLex()
             state = _Done
             cat = lexit.MAL
---[[        elseif isAlpha(ch)
+        elseif isAlpha(ch) then
             addLex()
---]]            state = _Alpha
+            state = _Alpha
         else
             addLex()
             state = _Done
             cat = lexit.PUNCT
+        end
+    end
+
+    -- State _Alpha: we are in an Identifier
+    local function hand_Alpha()
+        if isAlpha(ch) or isNum(ch) or ch == "_" then
+            addLex()
+        else
+            state = _Done
+            if checkKey(lexStr) then
+                cat = lexit.KEY
+            else
+                cat = lexit.ID
+            end
         end
     end
     
@@ -241,7 +271,8 @@ function lexit.lex(program)
 
     hand = {
         [_Done] = hand_Done,
-        [_Start] = hand_Start
+        [_Start] = hand_Start,
+        [_Alpha] = hand_Alpha
     }
     
     --[[***********************************]]--
