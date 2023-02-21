@@ -147,7 +147,7 @@ function lexit.lex(program)
     --      returns true if a match is found, otherwise returns false
     local function checkKey(str)
        for index, value in pairs(keywords) do
-            if value == str then
+            if str == value then
                 return true
             end
        end
@@ -161,7 +161,11 @@ function lexit.lex(program)
     local _Done = 0
     local _Start = 1
     local _Alpha = 2
-    
+    local _SingleQuote = 3
+    local _DoubleQuote = 4
+    local _Num = 5
+    local _Exponent = 6
+    local _NumPlus = 7
 
     --[[***********************************]]--
     --[[*** Character Utility Functions ***]]--
@@ -209,8 +213,10 @@ function lexit.lex(program)
             end
             
             -- Done if there are no comments
-            if curChar() ~= "-" and nxtChar() ~= "-" or curChar() ~= "#" and curChar() ~= "!" then
-                break
+            if curChar() ~= "-" and nxtChar() ~= "-" then
+                if curChar() ~= "#" and curChar() ~= "!" then
+                    break
+                end
             end 
 
             nxtPos() -- drop leading - or #
@@ -243,13 +249,22 @@ function lexit.lex(program)
             addLex()
             state = _Done
             cat = lexit.MAL
-        elseif isAlpha(ch) then
+        elseif isAlpha(ch) or ch == "_" then
             addLex()
             state = _Alpha
+        elseif ch == "'" then
+            addLex()
+            state = _SingleQuote
+        elseif ch == '"' then
+            addLex()
+            state = _DoubleQuote
+        elseif isNum(ch) then
+            addLex()
+            state = _Num
         else
             addLex()
             state = _Done
-            cat = lexit.PUNCT
+            cat = lexit.MAL
         end
     end
 
@@ -266,13 +281,93 @@ function lexit.lex(program)
             end
         end
     end
+
+    -- State _SingleQuote: We are in a string literal starting with a single quote (')
+    local function hand_SingleQuote()
+        if ch == "'" then
+            addLex()
+            state = _Done
+            cat = lexit.STRLIT
+        elseif isAlpha(ch) or isNum(ch) or isAscii(ch) or ch == " " then
+            addLex()
+        else
+            state = _Done
+            cat = lexit.MAL
+        end
+    end
+            
+    -- State _DoubleQuote: We are in a string literal starting with a double quote (")
+    local function hand_DoubleQuote()
+        if ch == '"' then
+            addLex()
+            state = _Done
+            cat = lexit.STRLIT
+        elseif isAlpha(ch) or isNum(ch) or isAscii(ch) or ch == " " then
+            addLex()
+        else
+            state = _Done
+            cat = lexit.MAL
+        end
+    end
+    
+    -- State _Num: we are in a NumericLitteral, and have not seen the following
+    --      'e', 'E', or '+'
+    local function hand_Num()
+        if isNum(ch) then
+            addLex()
+        elseif ch == "e" or ch == "E" then
+            addLex()
+            state = _Exponent
+        else
+            state = _Done
+            cat = lexit.NUMLIT
+        end
+    end
+
+    -- State _Exponent: We are in a numeric literal and have seen
+    --      either 'e' or 'E', we have not seen a '+'
+    local function hand_Exponent()
+        if isNum(ch) then
+            addLex()
+        elseif ch == "+" then
+            if isNum(nxtChar()) then
+                addLex()
+                state = _NumPlus
+            else
+                state = _Done
+                cat = lexit.MAL
+            end
+--[[        elseif ch == "e" or ch == "E" then
+            state = _Done
+--]]            cat = lexit.MAL
+        else
+            state = _Done
+            cat = lexit.NUMLIT
+        end
+    end
+
+
+    -- State _NumPlus: We are in a NUMLIT, and have seen a '+' 
+    local function hand_NumPlus()
+        if isNum(ch) then
+            addLex()
+        else
+            state = _Done
+            cat = lexit.NUMLIT
+        end
+     end
     
     -- Table of State-Handler Functions
 
     hand = {
         [_Done] = hand_Done,
         [_Start] = hand_Start,
-        [_Alpha] = hand_Alpha
+        [_Alpha] = hand_Alpha,
+        [_SingleQuote] = hand_SingleQuote,
+        [_DoubleQuote] = hand_DoubleQuote,
+        [_Num] = hand_Num,
+        [_Exponent] = hand_Exponent,
+        [_NumPlus] = hand_NumPlus
     }
     
     --[[***********************************]]--
