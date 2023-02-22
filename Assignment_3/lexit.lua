@@ -168,6 +168,7 @@ function lexit.lex(program)
     local _Num = 5
     local _Exponent = 6
     local _NumPlus = 7
+    local _Comp = 8
 
     --[[***********************************]]--
     --[[*** Character Utility Functions ***]]--
@@ -263,6 +264,9 @@ function lexit.lex(program)
         elseif isNum(ch) then
             addLex()
             state = _Num
+        elseif ch == "=" or ch == "<" or ch == ">" then
+            addLex()
+            state = _Comp
         else
             addLex()
             state = _Done
@@ -356,6 +360,17 @@ function lexit.lex(program)
             cat = lexit.NUMLIT
         end
      end
+
+     -- State _Comp: We are in an OP that is a single character followed
+     --     by an optional '=' character
+     local function hand_Comp()
+        if ch == "=" then
+            addLex()
+        else
+            state = _Done
+            cat = lexit.OP
+        end
+     end
     
     -- Table of State-Handler Functions
 
@@ -367,7 +382,8 @@ function lexit.lex(program)
         [_DoubleQuote] = hand_DoubleQuote,
         [_Num] = hand_Num,
         [_Exponent] = hand_Exponent,
-        [_NumPlus] = hand_NumPlus
+        [_NumPlus] = hand_NumPlus,
+        [_Comp] = hand_Comp
     }
     
     --[[***********************************]]--
