@@ -170,7 +170,6 @@ function lexit.lex(program)
     local _NumPlus = 7
     local _Comp = 8
     local _Bang = 9
---    local _SingleOP = 10
 
     --[[***********************************]]--
     --[[*** Character Utility Functions ***]]--
@@ -192,7 +191,15 @@ function lexit.lex(program)
         return program:sub(position+1, position+1)
     end
     
+
+    -- nxtChar2()
+    -- Return the next character at index position+2 in the current program
+    --      value will be either a single character string or an empty string
+    local function nxtChar2()
+        return program:sub(position+2, position+2)
+    end
     
+        
     -- nxtPos()
     -- Move the position to the next character.
     local function nxtPos()
@@ -274,7 +281,8 @@ function lexit.lex(program)
             state = _Bang
         elseif ch == "+" or ch == "-" or ch == "/" or ch == "[" or ch == "]" or ch == "%" or ch == "*" then
             addLex()
-            --state = SingleOP
+            -- Single character OP, no need to check next characters.
+            --      These only appear as a single character lexeme.
             state = _Done
             cat = lexit.OP
         else
@@ -331,7 +339,7 @@ function lexit.lex(program)
     local function hand_Num()
         if isNum(ch) then
             addLex()
-        elseif (ch == "e" or ch == "E") then -- and (isNum(nxtChar()) or (nxtChar() == "+" and nxtChar()) then
+        elseif (ch == "e" or ch == "E") and (isNum(nxtChar()) or (nxtChar() == "+" and isNum(nxtChar2()))) then
             addLex()
             state = _Exponent          
         else
@@ -347,13 +355,13 @@ function lexit.lex(program)
         if isNum(ch) then
             addLex()
         elseif ch == "+" then
-            if isNum(nxtChar()) then
-                addLex()
-                state = _NumPlus
-            else
+           -- if isNum(nxtChar()) then
+            addLex()
+            state = _NumPlus
+          --[[  else
                 state = _Done
                 cat = lexit.NUMLIT
-            end
+            end--]]
         else
             state = _Done
             cat = lexit.NUMLIT
