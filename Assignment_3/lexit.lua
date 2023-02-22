@@ -125,15 +125,19 @@ end
 --[[***********************************]]--
 
 -- lex
--- Lexer Description
+-- Lexer for Maleo language
+-- Intended for use in a for-in loop:
+--      for lex, cat in lexit.lex(program) do
+-- Here, lex is the string form of a lexeme, and cat is
+--      a number representing a lexeme category 
+--      - See Public Constants
 function lexit.lex(program)
 
     --[[***********************************]]--
     --[[***         Variables           ***]]--
     --[[***********************************]]--
 
-    local position       -- Index of the next char in the program
-                        --      ...
+    local position      -- Index of the next char in the program
     local state         -- Current state of the state machine
     local ch            -- Current character
     local lexStr        -- The current lexeme
@@ -174,7 +178,6 @@ function lexit.lex(program)
     --[[***********************************]]--
     --[[*** Character Utility Functions ***]]--
     --[[***********************************]]--
-
 
     -- curChar()
     -- Return the current character at index position in the current program
@@ -348,28 +351,19 @@ function lexit.lex(program)
         end
     end
 
-    -- State _Exponent: We are in a numeric literal and have seen
+    -- State _Exponent: We are in an exponential NUMLIT and have seen
     --      either 'e' or 'E', and have confirmed that the next character
-    --      is either a '+' or is a number
+    --      is either a number or a '+' which is followed by a number
     local function hand_Exponent()
-        if isNum(ch) then
-            addLex()
-        elseif ch == "+" then
-           -- if isNum(nxtChar()) then
+        if isNum(ch) or ch == "+" then
             addLex()
             state = _NumPlus
-          --[[  else
-                state = _Done
-                cat = lexit.NUMLIT
-            end--]]
-        else
-            state = _Done
-            cat = lexit.NUMLIT
         end
     end
 
 
-    -- State _NumPlus: We are in a NUMLIT, and have seen a '+' 
+    -- State _NumPlus: We are in an exponential NUMLIT, and have seen a '+' or
+    --      or we seen a digit after the exponent and shouldn't see a '+' 
     local function hand_NumPlus()
         if isNum(ch) then
             addLex()
@@ -392,7 +386,7 @@ function lexit.lex(program)
         end
      end
 
-     -- State _Bang: We are in an OP that starts with '!'
+     -- State _Bang: We are in the OP '!=' or in the PUNCT '!' 
      local function hand_Bang()
         if ch == "=" then
             addLex()
@@ -423,6 +417,10 @@ function lexit.lex(program)
     --[[***       Iterator Function     ***]]--
     --[[***********************************]]--
 
+    -- getLex
+    -- Is called each time through the for-in loop.
+    -- Returns a pair: either lexeme-string (lexStr), category (cat)
+    --      or nil , nil if there are no more lexemes.
     local function getLex(dummy1, dummy2)
         if position > program:len() then
             return nil, nil
@@ -444,6 +442,7 @@ function lexit.lex(program)
     --[[***        Body of lex          ***]]--
     --[[***********************************]]--
 
+    -- Init & return the iterator function
     position = 1
     nxtLex()
     return getLex, nil, nil
