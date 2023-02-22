@@ -337,8 +337,8 @@ function lexit.lex(program)
         end
     end
     
-    -- State _Num: we are in a NumericLitteral, and have not seen the following
-    --      'e', 'E', or '+'
+    -- State _Num: we are in a Numeric Literal, and have not seen the following
+    --      'e', 'E', or '+' which indicate an exponential NUMLIT
     local function hand_Num()
         if isNum(ch) then
             addLex()
