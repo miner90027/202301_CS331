@@ -169,6 +169,8 @@ function lexit.lex(program)
     local _Exponent = 6
     local _NumPlus = 7
     local _Comp = 8
+    local _Bang = 9
+--    local _SingleOP = 10
 
     --[[***********************************]]--
     --[[*** Character Utility Functions ***]]--
@@ -267,6 +269,14 @@ function lexit.lex(program)
         elseif ch == "=" or ch == "<" or ch == ">" then
             addLex()
             state = _Comp
+        elseif ch == "!" then
+            addLex()
+            state = _Bang
+        elseif ch == "+" or ch == "-" or ch == "/" or ch == "[" or ch == "]" or ch == "%" or ch == "*" then
+            addLex()
+            --state = SingleOP
+            state = _Done
+            cat = lexit.OP
         else
             addLex()
             state = _Done
@@ -366,11 +376,25 @@ function lexit.lex(program)
      local function hand_Comp()
         if ch == "=" then
             addLex()
+            state = _Done
+            cat = lexit.OP
         else
             state = _Done
             cat = lexit.OP
         end
      end
+
+     -- State _Bang: We are in an OP that starts with '!'
+     local function hand_Bang()
+        if ch == "=" then
+            addLex()
+            state = _Done
+            cat = lexit.OP
+        else
+            state = _Done
+            cat = lexit.PUNCT
+        end
+    end
     
     -- Table of State-Handler Functions
 
@@ -383,7 +407,8 @@ function lexit.lex(program)
         [_Num] = hand_Num,
         [_Exponent] = hand_Exponent,
         [_NumPlus] = hand_NumPlus,
-        [_Comp] = hand_Comp
+        [_Comp] = hand_Comp,
+        [_Bang] = hand_Bang
     }
     
     --[[***********************************]]--
