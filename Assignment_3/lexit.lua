@@ -109,10 +109,12 @@ end
 local function isIllegal(s)
     if s:len() ~= 1 then 
         return false
-    elseif isBlank(s) or isAscii(s) then
+    elseif isBlank(s) then
+        return false
+    elseif isAscii(s) then
         return false
     else
-        return false
+        return true
     end
 end
 
@@ -213,12 +215,11 @@ function lexit.lex(program)
             end
             
             -- Done if there are no comments
-            if curChar() ~= "-" and nxtChar() ~= "-" then
-                if curChar() ~= "#" and curChar() ~= "!" then
-                    break
-                end
+            if (curChar() ~= "-" or nxtChar() ~= "-") and (curChar() ~= "#" or nxtChar() ~= "!") then
+                break
             end 
 
+            -- Skip comment initilization 
             nxtPos() -- drop leading - or #
             nxtPos() -- drop leading - or !
 
@@ -244,6 +245,7 @@ function lexit.lex(program)
         error("'_Done' state should not be handled\n")
     end
 
+    -- State _Start: Begin Lexeme
     local function hand_Start()
         if isIllegal(ch) then
             addLex()
@@ -264,7 +266,7 @@ function lexit.lex(program)
         else
             addLex()
             state = _Done
-            cat = lexit.MAL
+            cat = lexit.PUNCT
         end
     end
 
@@ -288,7 +290,7 @@ function lexit.lex(program)
             addLex()
             state = _Done
             cat = lexit.STRLIT
-        elseif isAlpha(ch) or isNum(ch) or isAscii(ch) or ch == " " then
+        elseif isAlpha(ch) or isNum(ch) or isAscii(ch) or isIllegal(ch) or (isBlank(ch) and ch ~= "\n") then
             addLex()
         else
             state = _Done
@@ -302,7 +304,7 @@ function lexit.lex(program)
             addLex()
             state = _Done
             cat = lexit.STRLIT
-        elseif isAlpha(ch) or isNum(ch) or isAscii(ch) or ch == " " then
+        elseif isAlpha(ch) or isNum(ch) or isAscii(ch) or isIllegal(ch) or (isBlank(ch) and ch ~= "\n") then
             addLex()
         else
             state = _Done
@@ -315,9 +317,9 @@ function lexit.lex(program)
     local function hand_Num()
         if isNum(ch) then
             addLex()
-        elseif ch == "e" or ch == "E" then
+        elseif (ch == "e" or ch == "E") then -- and (isNum(nxtChar()) or (nxtChar() == "+" and nxtChar()) then
             addLex()
-            state = _Exponent
+            state = _Exponent          
         else
             state = _Done
             cat = lexit.NUMLIT
@@ -325,7 +327,8 @@ function lexit.lex(program)
     end
 
     -- State _Exponent: We are in a numeric literal and have seen
-    --      either 'e' or 'E', we have not seen a '+'
+    --      either 'e' or 'E', and have confirmed that the next character
+    --      is either a '+' or is a number
     local function hand_Exponent()
         if isNum(ch) then
             addLex()
@@ -335,11 +338,8 @@ function lexit.lex(program)
                 state = _NumPlus
             else
                 state = _Done
-                cat = lexit.MAL
+                cat = lexit.NUMLIT
             end
---[[        elseif ch == "e" or ch == "E" then
-            state = _Done
---]]            cat = lexit.MAL
         else
             state = _Done
             cat = lexit.NUMLIT
@@ -386,6 +386,7 @@ function lexit.lex(program)
             ch = curChar()
             hand[state]()
         end
+        
         nxtLex()
         return lexStr, cat
     end
