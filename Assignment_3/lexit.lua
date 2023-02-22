@@ -360,8 +360,7 @@ function lexit.lex(program)
             state = _NumPlus
         end
     end
-
-
+    
     -- State _NumPlus: We are in an exponential NUMLIT, and have seen a '+' or
     --      or we seen a digit after the exponent and shouldn't see a '+' 
     local function hand_NumPlus()
@@ -378,12 +377,9 @@ function lexit.lex(program)
      local function hand_Comp()
         if ch == "=" then
             addLex()
-            state = _Done
-            cat = lexit.OP
-        else
-            state = _Done
-            cat = lexit.OP
         end
+        state = _Done
+        cat = lexit.OP
      end
 
      -- State _Bang: We are in the OP '!=' or in the PUNCT '!' 
@@ -399,7 +395,6 @@ function lexit.lex(program)
     end
     
     -- Table of State-Handler Functions
-
     hand = {
         [_Done] = hand_Done,
         [_Start] = hand_Start,
