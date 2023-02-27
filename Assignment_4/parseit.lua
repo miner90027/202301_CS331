@@ -1,30 +1,23 @@
--- parseit.lua  SKELETON
--- Glenn G. Chappell
--- 2023-02-22
---
--- For CS 331 Spring 2023
--- Solution to Assignment 4, Exercise A
--- Requires lexit.lua
-
-
--- For grammar & AST specification, see the Assignment 4 description.
-
+--[[ 
+   - parseit.lua
+   - Started by: Glenn G. Chappell
+   - 2023-02-22
+   -
+   - Finished by: Aleks McCormick
+   - 2023/02/27
+   - Spring 2023 CS 331
+   - Solution to Assignment 4, Exercise A
+   - Requires lexit.lua
+--]]
 
 local lexit = require "lexit"
 
-
--- *********************************************************************
 -- Module Table Initialization
--- *********************************************************************
-
-
 local parseit = {}  -- Our module
 
-
--- *********************************************************************
--- Variables
--- *********************************************************************
-
+--[[*********************************************]]--
+--[[***               Variables               ***]]--
+--[[*********************************************]]--
 
 -- For lexer iteration
 local iter          -- Iterator returned by lexit.lex
@@ -37,11 +30,9 @@ local lexstr = ""   -- String form of current lexeme
 local lexcat = 0    -- Category of current lexeme:
                     --  one of categories below, or 0 for past the end
 
-
--- *********************************************************************
--- Symbolic Constants for AST
--- *********************************************************************
-
+--[[*********************************************]]--
+--[[***      Symbolic Constangs for AST       ***]]--
+--[[*********************************************]]--
 
 local STMT_LIST    = 1
 local WRITE_STMT   = 2
@@ -63,11 +54,9 @@ local BOOLLIT_VAL  = 17
 local RAND_CALL    = 18
 local READ_CALL    = 19
 
-
--- *********************************************************************
--- Utility Functions
--- *********************************************************************
-
+--[[*********************************************]]--
+--[[***           Utility functions           ***]]--
+--[[*********************************************]]--
 
 -- advance
 -- Go to next lexeme and load it into lexstr, lexcat.
@@ -104,8 +93,8 @@ end
 
 -- matchString
 -- Given string, see if current lexeme string form is equal to it. If
--- so, then advance to next lexeme & return true. If not, then do not
--- advance, return false.
+--    so, then advance to next lexeme & return true. If not, then do not
+--    advance, return false.
 -- Function init must be called before this function is called.
 local function matchString(s)
     if lexstr == s then
@@ -119,8 +108,8 @@ end
 
 -- matchCat
 -- Given lexeme category (integer), see if current lexeme category is
--- equal to it. If so, then advance to next lexeme & return true. If
--- not, then do not advance, return false.
+--    equal to it. If so, then advance to next lexeme & return true. If
+--    not, then do not advance, return false.
 -- Function init must be called before this function is called.
 local function matchCat(c)
     if lexcat == c then
@@ -131,11 +120,9 @@ local function matchCat(c)
     end
 end
 
-
--- *********************************************************************
--- "local" Statements for Parsing Functions
--- *********************************************************************
-
+--[[****************************************************************]]--
+--[[***         "local" statements for Parsing Functions         ***]]--
+--[[****************************************************************]]--
 
 local parse_program
 local parse_stmt_list
@@ -147,11 +134,9 @@ local parse_arith_expr
 local parse_term
 local parse_factor
 
-
--- *********************************************************************
--- The Parser: Function "parse" - EXPORTED
--- *********************************************************************
-
+--[[****************************************************************]]--
+--[[***         The Parser: Function "parse" - EXPORTED          ***]]--
+--[[****************************************************************]]--
 
 -- parse
 -- Given program, initialize parser and call parsing function for start
@@ -171,23 +156,21 @@ function parseit.parse(prog)
     return good, done, ast
 end
 
-
--- *********************************************************************
--- Parsing Functions
--- *********************************************************************
-
+--[[*********************************************]]--
+--[[***           Parsing Functions           ***]]--
+--[[*********************************************]]--
 
 -- Each of the following is a parsing function for a nonterminal in the
--- grammar. Each function parses the nonterminal in its name and returns
--- a pair: boolean, AST. On a successul parse, the boolean is true, the
--- AST is valid, and the current lexeme is just past the end of the
--- string the nonterminal expanded into. Otherwise, the boolean is
--- false, the AST is not valid, and no guarantees are made about the
--- current lexeme. See the AST Specification in the Assignment 4
--- description for the format of the returned AST.
+--    grammar. Each function parses the nonterminal in its name and returns
+--    a pair: boolean, AST. On a successul parse, the boolean is true, the
+--    AST is valid, and the current lexeme is just past the end of the
+--    string the nonterminal expanded into. Otherwise, the boolean is
+--    false, the AST is not valid, and no guarantees are made about the
+--    current lexeme. See the AST Specification in the Assignment 4
+--    description for the format of the returned AST.
 
 -- NOTE. Declare parsing functions "local" above, but not below. This
--- allows them to be called before their definitions.
+--    allows them to be called before their definitions.
 
 
 -- parse_program
@@ -365,11 +348,5 @@ function parse_factor()
     return false, nil  -- DUMMY
 end
 
-
--- *********************************************************************
 -- Module Table Return
--- *********************************************************************
-
-
 return parseit
-
