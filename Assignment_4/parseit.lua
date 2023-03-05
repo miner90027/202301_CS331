@@ -276,10 +276,6 @@ function parse_statement()
         end
 
         return true, { FUNC_DEF, savelex, ast1 }
-
-    elseif mathString("if") then
---        savelex = lexstr
-        return false, nil
         
     elseif matchString("return") then
     
@@ -289,6 +285,30 @@ function parse_statement()
             return true, { RETURN_STMT, ast1 }
         else
             return false, nil
+
+    elseif mathString("while") then
+
+        good, ast1 = parse_expr()
+        
+        if not good then
+            return false, nil        
+        end
+
+        if not matchString("do") then
+            return false, nil
+        end
+        
+        good, ast2 = parse_stmt_list()
+
+        if not good then
+            return false, nil
+        end
+
+        if not matchString("end") then
+            return false, nil
+        end
+        
+        return true, { WHILE_LOOP, ast1, ast2 }
             
     else
         -- TODO: WRITE THIS!!!
