@@ -329,10 +329,33 @@ function parse_write_arg()
 
     elseif matchString("cr") then
         return true, { CR_OUT }
+    elseif matchString("char") then
 
+        if not matchString("(") then
+            return false, nil
+        end
+
+        good, ast1 = parse_expr()
+
+        if not good then
+            return false, nil
+        end
+
+        if not matchString(")") then
+            return false, nil
+        end
+
+        return true, { CHAR_CALL, ast1 }
+        
     else
-        -- TODO: WRITE THIS!!!
-        return false, nil  -- DUMMY
+
+        good, ast1 = parse_expr()
+
+        if good then
+            return good, ast1
+        end
+        
+        return false, nil 
     end
 end
 
