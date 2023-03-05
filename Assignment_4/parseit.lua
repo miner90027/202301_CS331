@@ -140,10 +140,10 @@ local parse_factor
 
 -- parse
 -- Given program, initialize parser and call parsing function for start
--- symbol. Returns pair of booleans & AST. First boolean indicates
--- successful parse or not. Second boolean indicates whether the parser
--- reached the end of the input or not. AST is only valid if first
--- boolean is true.
+--   symbol. Returns pair of booleans & AST. First boolean indicates
+--   successful parse or not. Second boolean indicates whether the parser
+--   reached the end of the input or not. AST is only valid if first
+--   boolean is true.
 function parseit.parse(prog)
     -- Initialization
     init(prog)
@@ -277,6 +277,19 @@ function parse_statement()
 
         return true, { FUNC_DEF, savelex, ast1 }
 
+    elseif mathString("if") then
+--        savelex = lexstr
+        return false, nil
+        
+    elseif matchString("return") then
+    
+        good, ast1 = parse_expr()
+        
+        if good then
+            return true, { RETURN_STMT, ast1 }
+        else
+            return false, nil
+            
     else
         -- TODO: WRITE THIS!!!
         return false, nil  -- DUMMY
