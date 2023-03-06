@@ -329,7 +329,7 @@ function parse_statement()
             return false, nil
         end
 
-        ast2 = {ast2, ast1)
+        table.insert(ast2, ast1)
 
     elseif matchString("else") then
 
@@ -338,7 +338,7 @@ function parse_statement()
             return false, nil
         end
 
-        ast2 = {ast2, ast1}
+        table.insert(ast2, ast1)
         
         if not matchString("end") then
             return false,  nil
