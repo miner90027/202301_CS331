@@ -286,7 +286,7 @@ function parse_statement()
         else
             return false, nil
 
-    elseif mathString("while") then
+    elseif matchString("while") then
 
         good, ast1 = parse_expr()
         
@@ -309,7 +309,43 @@ function parse_statement()
         end
         
         return true, { WHILE_LOOP, ast1, ast2 }
-            
+
+    elseif matchString("if") or matchString("elseif") then
+        
+        good, ast1 = parse_expr()
+
+        if not good then
+            return false, nil
+        end
+
+        if not matchString("then") then
+            return false, nil
+        end
+
+        ast2 = {IF_STMT , ast1}
+
+        good, ast1 = parse_stmt_list()
+        if not good then
+            return false, nil
+        end
+
+        ast2 = {ast2, ast1)
+
+    elseif matchString("else") then
+
+        good, ast1 = parse_stmt_list()
+        if not good then
+            return false, nil
+        end
+
+        ast2 = {ast2, ast1}
+        
+        if not matchString("end") then
+            return false,  nil
+        end
+
+        return true, ast2
+        
     else
         -- TODO: WRITE THIS!!!
         return false, nil  -- DUMMY
