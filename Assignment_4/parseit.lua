@@ -222,6 +222,8 @@ end
 function parse_statement()
     local good, ast1, ast2, savelex
 
+    savelex = lexstr
+    
     if matchString("write") then
         if not matchString("(") then
             return false, nil
@@ -285,6 +287,7 @@ function parse_statement()
             return true, { RETURN_STMT, ast1 }
         else
             return false, nil
+        end
 
     elseif matchString("while") then
 
@@ -313,7 +316,6 @@ function parse_statement()
     elseif matchString("if") or matchString("elseif") then
         
         good, ast1 = parse_expr()
-
         if not good then
             return false, nil
         end
@@ -346,14 +348,8 @@ function parse_statement()
 
         return true, ast2
         
-    else
-
-        savelex = lexstr
-
-        if not matchCat(lexit.ID) then
-            return false, nil
-        end
-
+    elseif matchCat(lexit.ID) then
+           
         if matchString("(") then
             if not matchString(")") then
                 return false, nil
@@ -375,8 +371,8 @@ function parse_statement()
 
             return true, {ASSN_STMT, ast1, ast2}
         end
-        
-        return false, nil  -- DUMMY
+    else
+--        return true, nil  -- DUMMY
     end
 end
 
