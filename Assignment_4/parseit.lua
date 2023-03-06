@@ -521,11 +521,32 @@ function parse_factor()
     elseif matchString("true") or matchString("false") then
         return true, {BOOLLIT_VAL, savelex}
     
+    elseif matchCat(lexit.ID) then
+        if matchString("(") then
+            if not matchString(")") then
+                return false, nil
+            end
+
+            return true, {FUNC_CALL, savelex}
+            
+        elseif matchString("[") then
+            good, ast1 = parse_expr()
+            if not good then
+                return false, nil
+            end
+            
+            if not matchString("]") then
+                return false, nil
+            end    
+        
+            return true, { ARRAY_VAR, savelex, ast1 }
+        end
+
+        return true, { SIMPLE_VAR, savelex }
+            
     else
-    
         return false, nil  -- DUMMY
     end
-    -- TODO: WRITE THIS!!!
 end
 
 -- Module Table Return
