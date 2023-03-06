@@ -347,7 +347,35 @@ function parse_statement()
         return true, ast2
         
     else
-        -- TODO: WRITE THIS!!!
+
+        savelex = lexstr
+
+        if not matchCat(lexit.ID) then
+            return false, nil
+        end
+
+        if matchString("(") then
+            if not matchString(")") then
+                return false, nil
+            end
+
+            return true, {FUNC_CALL, savelex}
+        end
+
+        if matchString("=") or matchString("[") then
+            good, ast1 = parse_factor()
+            if not good then
+                return false, nil
+            end
+
+            good, ast2 = parse_expr()
+            if not good then
+                return false, nil
+            end
+
+            return true, {ASSN_STMT, ast1, ast2}
+        end
+        
         return false, nil  -- DUMMY
     end
 end
