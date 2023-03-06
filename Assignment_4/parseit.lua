@@ -385,7 +385,7 @@ end
 -- Parsing function for nonterminal "write_arg".
 -- Function init must be called before this function is called.
 function parse_write_arg()
-    local savelex
+    local savelex, good, ast1
 
     savelex = lexstr
     if matchCat(lexit.STRLIT) then
@@ -464,8 +464,68 @@ end
 -- Parsing function for nonterminal "factor".
 -- Function init must be called before this function is called.
 function parse_factor()
+    local good, ast1, ast2, savelex
+
+    savelex = lexstr
+    if matchCat(lexit.NUMLIT) then
+        return true, {NUMLIT_VAL, savelex}
+        
+    elseif matchString("+") or matchString("-") or matchString("not") then
+        good, ast1 = parse_factor()
+        if not good then
+            return false, nil
+        end
+
+        ast2 = {UN_OP, lexstr}
+        return true, {ast2, ast1}
+        
+    elseif matchString("(") then
+        good, ast1 = parse_expr()
+        if not good then
+            return false, nil
+        end
+            
+        if not matchString(")") then
+            return false, nil
+        end
+
+        return true, {ast1}
+        
+    elseif matchString("read") then
+        if not matchString("(") then
+            return false, nil
+        end
+
+        if not matchString(")") then
+            return false, nil
+        end
+
+        return true, {READ_CALL}
+        
+    elseif matchString("rand") then
+        if not matchString("(") then
+            return false, nil
+        end
+
+        good, ast1 = parse_expr()
+        if not good then
+            return false, nil
+        end
+            
+        if not matchString(")") then
+            return false, nil
+        end
+
+        return true, {RAND_CALL, ast1}
+        
+    elseif matchString("true") or matchString("false") then
+        return true, {BOOLLIT_VAL, savelex}
+    
+    else
+    
+        return false, nil  -- DUMMY
+    end
     -- TODO: WRITE THIS!!!
-    return false, nil  -- DUMMY
 end
 
 -- Module Table Return
