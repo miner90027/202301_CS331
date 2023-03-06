@@ -437,8 +437,33 @@ end
 -- Parsing function for nonterminal "compare_expr".
 -- Function init must be called before this function is called.
 function parse_compare_expr()
-    -- TODO: WRITE THIS!!!
-    return false, nil  -- DUMMY
+    local good, ast1, ast2, savelex
+
+    good, ast1 = parse_arith_expr()
+    if not good then
+        return false, nil
+    end
+
+    while true do
+
+        savelex = lexstr
+
+        if not matchString("==") and not matchString("!=")
+            and not matchString("<") and not matchString("<=")
+            and not matchString(">") and not matchString(">=") then
+            break
+        end
+
+        good, ast2 = parse_arith_expr()
+        if not good then
+            return false, nil
+        end
+
+        ast1 = {{BIN_OP, savelex}, ast1, ast2}
+
+    end
+    
+    return true, ast1
 end
 
 
