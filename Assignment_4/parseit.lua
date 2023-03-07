@@ -382,20 +382,35 @@ function parse_statement()
             end
 
             return true, {FUNC_CALL, savelex}
-        end
-
-        if matchString("=") or matchString("[") then
-            good, ast1 = parse_factor()
+            
+        elseif matchString("=") then
+            good, ast1 = parse_expr()
             if not good then
                 return false, nil
             end
 
-            good, ast2 = parse_expr()
+            return true, {ASSN_STMT,{SIMPLE_VAR, savelex}, ast1}
+        elseif matchString("[") then
+            good, ast1 = parse_expr()
             if not good then
                 return false, nil
             end
 
-            return true, {ASSN_STMT, ast1, ast2}
+            if not matchString("]") then
+                return false, nil
+            end
+            
+            ast2 = {ASSN_STMT, {ARRAY_VAR, savelex, ast1}}
+
+            if not matchString("=") then
+                return false, nil
+            end
+           
+            good, ast1 = parse_expr()
+
+            table.insert(ast2, ast1)
+
+            return true, ast2
         end
     else
         return false, nil  -- DUMMY
@@ -661,7 +676,7 @@ function parse_factor()
         return true, { SIMPLE_VAR, savelex }
             
     else
-        return false, nil  -- DUMMY
+--        return false, nil  -- DUMMY
     end
 end
 
