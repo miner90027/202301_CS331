@@ -282,12 +282,11 @@ function parse_statement()
     elseif matchString("return") then
     
         good, ast1 = parse_expr()
-        
-        if good then
-            return true, { RETURN_STMT, ast1 }
-        else
+        if not good then
             return false, nil
         end
+
+        return true, { RETURN_STMT, ast1 }
 
     elseif matchString("while") then
 
@@ -332,8 +331,6 @@ function parse_statement()
         end
 
         table.insert(ast2, ast1)
-
-
         
         while not matchString("end") do
             if matchString("else") then 
@@ -413,7 +410,7 @@ function parse_statement()
             return true, ast2
         end
     else
-        return false, nil  -- DUMMY
+        return false, nil
     end
 end
 
@@ -437,7 +434,6 @@ function parse_write_arg()
         end
 
         good, ast1 = parse_expr()
-
         if not good then
             return false, nil
         end
@@ -451,7 +447,6 @@ function parse_write_arg()
     else
 
         good, ast1 = parse_expr()
-
         if good then
             return good, ast1
         end
@@ -676,7 +671,7 @@ function parse_factor()
         return true, { SIMPLE_VAR, savelex }
             
     else
---        return false, nil  -- DUMMY
+        return false, nil
     end
 end
 
