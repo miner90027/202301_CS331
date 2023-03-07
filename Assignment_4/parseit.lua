@@ -607,7 +607,7 @@ function parse_factor()
             return false, nil
         end
 
-        ast2 = {UN_OP, lexstr}
+        ast2 = {UN_OP, savelex}
         return true, {ast2, ast1}
         
     elseif matchString("(") then
@@ -620,7 +620,7 @@ function parse_factor()
             return false, nil
         end
 
-        return true, {ast1}
+        return true, ast1
         
     elseif matchString("read") then
         if not matchString("(") then
