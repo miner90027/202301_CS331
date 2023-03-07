@@ -313,8 +313,8 @@ function parse_statement()
         
         return true, { WHILE_LOOP, ast1, ast2 }
 
-    elseif matchString("if") or matchString("elseif") then
-        
+    elseif matchString("if") then
+
         good, ast1 = parse_expr()
         if not good then
             return false, nil
@@ -333,21 +333,47 @@ function parse_statement()
 
         table.insert(ast2, ast1)
 
-    elseif matchString("else") then
 
-        good, ast1 = parse_stmt_list()
-        if not good then
-            return false, nil
-        end
-
-        table.insert(ast2, ast1)
         
-        if not matchString("end") then
-            return false,  nil
+        while not matchString("end") do
+            if matchString("else") then 
+                good, ast1 = parse_stmt_list()
+                if not good then
+                    return false, nil
+                end
+
+                table.insert(ast2, ast1) 
+
+                if not matchString("end") then
+                    return false, nil
+                end
+
+                break
+            elseif matchString("elseif") then
+                good, ast1 = parse_expr()
+                if not good then
+                    return false, nil
+                end
+
+                if not matchString("then") then
+                    return false, nil
+                end
+
+                table.insert(ast2, ast1)
+            else
+                return false, nil
+            end
+
+            good, ast1 = parse_stmt_list()
+            if not good then
+                return false, nil
+            end
+
+            table.insert(ast2, ast1)
         end
 
         return true, ast2
-        
+    
     elseif matchCat(lexit.ID) then
            
         if matchString("(") then
@@ -372,7 +398,7 @@ function parse_statement()
             return true, {ASSN_STMT, ast1, ast2}
         end
     else
---        return true, nil  -- DUMMY
+        return false, nil  -- DUMMY
     end
 end
 
