@@ -357,16 +357,18 @@ function parse_statement()
                 end
 
                 table.insert(ast2, ast1)
+    
+                good, ast1 = parse_stmt_list()
+                if not good then
+                    return false, nil
+                end
+
+                table.insert(ast2, ast1)
+
             else
                 return false, nil
             end
 
-            good, ast1 = parse_stmt_list()
-            if not good then
-                return false, nil
-            end
-
-            table.insert(ast2, ast1)
         end
 
         return true, ast2
