@@ -32,7 +32,15 @@ collatzCounts = map counter [1..] where
 
 -- findList
 findList :: Eq a => [a] -> [a] -> Maybe Int
-findList _ _ = Just 42  -- DUMMY; REWRITE THIS!!!
+findList listA listB
+    | null listA = Just 0
+    | fst ( index listA listB 0) = Just (snd (index listA listB 0))
+    | otherwise = Nothing
+    where
+        index listA listB i
+            | listA == take (length listA) listB = (True, i)
+            | null listB = (False, i)
+            | otherwise = index listA (drop 1 listB) (i + 1)
 
 
 -- =====================================================================
@@ -49,7 +57,11 @@ listA ## listB = length match where
 
 -- filterAB
 filterAB :: (a -> Bool) -> [a] -> [b] -> [b]
-filterAB _ _ bs = bs  -- DUMMY; REWRITE THIS!!!
+filterAB _ _ [] = []
+filterAB _ [] _ = []
+filterAB func (x:xs) (y:ys)
+    | func x = y : filterAB func xs ys
+    | otherwise = filterAB func xs ys
 
 
 -- =====================================================================
