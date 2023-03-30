@@ -19,11 +19,19 @@
 {-*********************************************-}
 
 
+-- WARNING:
+-- The following code will only accept integer type values when prompting for integers.
+-- Use of non-integer values when inputing the list of values causes the program to crash
+--      when calculating the maximum value.
+
 module Main where
 
 import System.IO
 
 
+
+-- main
+-- Main program. Prompts user for input and provides output
 main = do
     putStrLn ""
     putStrLn "Please enter a list of integers, one per line."
@@ -46,7 +54,10 @@ main = do
 
 
 
-    
+-- continue
+-- Provides user with the choice to continue entering new lists
+-- Accepts following characters as input: y Y n N
+--      If provided invalid input, then it just prompts again.
 continue = do
     putStrLn ""
     putStrLn "Would you like to compute another maximum? (y/n) "
@@ -62,8 +73,14 @@ continue = do
     else 
         continue
 
-        
 
+
+-- vals
+-- Prompts and takes user input for integers. Will accept but
+--      cannot handle non-integer input. Non-integer input 
+--      causes program to crash after main calls this IO block. 
+-- Continues prompting until the user inputs a blank line.
+-- Returns a list of the input values.
 vals = do
         
     putStr "Please input an integer or a blank line to finish: "
