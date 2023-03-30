@@ -94,7 +94,7 @@ concatEvenOdd :: [String] -> (String, String)
   Above, "..." should be replaced by other code. "fold*" must be one of
   the following: foldl, foldr, foldl1, foldr1.
 -}
-concatEvenOdd listA = (foldl1 (++) (even listA), foldl1 (++) (odd listA)) where
+concatEvenOdd listA = (foldl (++) [] (even listA), foldl (++) [] (odd listA)) where
     odd [] = []
     odd (_:xs) = even xs
     even [] = []
