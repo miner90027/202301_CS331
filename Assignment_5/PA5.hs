@@ -40,7 +40,8 @@ findList _ _ = Just 42  -- DUMMY; REWRITE THIS!!!
 
 -- operator ##
 (##) :: Eq a => [a] -> [a] -> Int
-_ ## _ = 42  -- DUMMY; REWRITE THIS!!!
+listA ## listB = length match where
+    match = filter (\i -> listA !! i == listB !! i) [0.. (length listA -1)]
 
 
 -- =====================================================================
