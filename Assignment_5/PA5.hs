@@ -1,4 +1,9 @@
--- PA5.hs  SKELETON
+-- PA5.hs
+-- Finished by:
+-- Aleks McCormick
+-- 2023\03\27 
+--
+-- Started by:
 -- Glenn G. Chappell
 -- 2023-03-22
 --
@@ -13,8 +18,14 @@ module PA5 where
 
 -- collatzCounts
 collatzCounts :: [Integer]
-collatzCounts = [42..]  -- DUMMY; REWRITE THIS!!!
-
+collatzCounts = map counter [1..] where
+    counter n = count n 0 where
+        count 1 x = x
+        count n x = count (collatz n) (x + 1)
+    collatz x
+        | x == 0         = 0
+        | mod x 2 == 0   = x `div` 2 
+        | otherwise      = x * 3 + 1 
 
 -- =====================================================================
 
