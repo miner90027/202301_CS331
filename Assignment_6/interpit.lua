@@ -1,27 +1,31 @@
--- interpit.lua  SKELETON
--- Glenn G. Chappell
--- 2023-04-05
---
--- For CS 331 Spring 2023
--- Interpret AST from parseit.parse
--- Solution to Assignment 6, Exercise B
-
+--[[
+   - interpit.lua
+   - Started by: Glenn G. Chappell
+   - 2023-04-05
+   -
+   - Finished by: Aleks McCormick
+   - 2023-04-12
+   -
+   - For CS 331 Spring 2023
+   - Interpret AST from parseit.parse
+   - Solution to Assignment 6, Exercise B
+--]]
 
 -- *** To run a Maleo program, use maleo.lua, which uses this file.
 
+--[[***          Section A          ***]]--
 
--- *********************************************************************
+--      Secret Message: What do you call a fallen tree that has lost its amateur status?
+
+--[[***          Section B          ***]]--
+
+
 -- Module Table Initialization
--- *********************************************************************
-
-
 local interpit = {}  -- Our module
 
-
--- *********************************************************************
--- Symbolic Constants for AST
--- *********************************************************************
-
+--[[*********************************************]]--
+--[[***      Symbolic Constants for AST       ***]]--
+--[[*********************************************]]--
 
 local STMT_LIST    = 1
 local WRITE_STMT   = 2
@@ -44,9 +48,9 @@ local RAND_CALL    = 18
 local READ_CALL    = 19
 
 
--- *********************************************************************
--- Utility Functions
--- *********************************************************************
+--[[*********************************************]]--
+--[[***           Utility functions           ***]]--
+--[[*********************************************]]--
 
 
 -- numToInt
@@ -64,12 +68,12 @@ end
 
 -- strToNum
 -- Given a string, attempt to interpret it as an integer. If this
--- succeeds, return the integer. Otherwise, return 0.
+--      succeeds, return the integer. Otherwise, return 0.
 local function strToNum(s)
     assert(type(s) == "string")
 
     -- Try to do string -> number conversion; make protected call
-    -- (pcall), so we can handle errors.
+    --      (pcall), so we can handle errors.
     local success, value = pcall(function() return tonumber(s) end)
 
     -- Return integer value, or 0 on error.
@@ -105,8 +109,8 @@ end
 
 -- astToStr
 -- Given an AST, produce a string holding the AST in (roughly) Lua form,
--- with numbers replaced by names of symbolic constants used in parseit.
--- A table is assumed to represent an array.
+--      with numbers replaced by names of symbolic constants used in parseit.
+--      A table is assumed to represent an array.
 -- See the Assignment 4 description for the AST Specification.
 --
 -- THIS FUNCTION IS INTENDED FOR USE IN DEBUGGING ONLY!
@@ -152,10 +156,9 @@ function astToStr(x)
     end
 end
 
-
--- *********************************************************************
--- Primary Function for Client Code
--- *********************************************************************
+--[[****************************************************************]]--
+--[[***            Primary Function for Client Code              ***]]--
+--[[****************************************************************]]--
 
 
 -- interp
@@ -176,9 +179,9 @@ end
 --   state, updated with changed variable values
 function interpit.interp(ast, state, util)
     -- Each local interpretation function is given the AST for the
-    -- portion of the code it is interpreting. The function-wide
-    -- versions of state and until may be used. The function-wide
-    -- version of state may be modified as appropriate.
+    --      portion of the code it is interpreting. The function-wide
+    --      versions of state and until may be used. The function-wide
+    --      version of state may be modified as appropriate.
 
 
     -- Forward declare local functions
@@ -232,7 +235,7 @@ function interpit.interp(ast, state, util)
 
     -- eval_expr
     -- Given the AST for an expression, evaluate it and return the
-    -- value.
+    --      value.
     function eval_expr(ast)
         local result
 
@@ -253,10 +256,5 @@ function interpit.interp(ast, state, util)
 end
 
 
--- *********************************************************************
 -- Module Table Return
--- *********************************************************************
-
-
 return interpit
-
