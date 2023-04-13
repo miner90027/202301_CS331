@@ -210,7 +210,12 @@ function interpit.interp(ast, state, util)
                 elseif ast[i][1] == CR_OUT then
                     util.output("\n")
                 elseif ast[i][1] == CHAR_CALL then
-                    print("*** UNIMPLEMENTED WRITE ARG")
+                    local char = eval_expr(ast[i][2])
+                    if char < 0 or char > 255 then
+                        char = 0
+                    end
+                    
+                    util.output(numToStr(char))
                 else  -- Expression
                     local val = eval_expr(ast[i])
                     util.output(numToStr(val))
@@ -227,8 +232,29 @@ function interpit.interp(ast, state, util)
                 funcbody = { STMT_LIST }
             end
             interp_stmt_list(funcbody)
+        elseif ast[1] == ASSN_STMT then
+            local var = ast[2][2]
+            local val = eval_expr(ast[3])
+
+            if ast[2][1] == SIMPLE_VAR then
+                
+                state.v[var] = val
+                
+            elseif ast[2][1] == ARRAY_VAR then
+                local index = eval_expr(ast[2][3])
+
+                if state.a[var] == nil then
+                    state.a[var] = {}
+                end
+
+                state.a[var][index] = val
+            end
+            
+        elseif ast[1] == RETURN_STMT then
+            --print("###   RETURN_STMT")
         else
-            print("*** UNIMPLEMENTED STATEMENT")
+            --print("*** UNIMPLEMENTED STATEMENT:")
+            --print(astToStr(ast[1]))
         end
     end
 
@@ -241,8 +267,24 @@ function interpit.interp(ast, state, util)
 
         if ast[1] == NUMLIT_VAL then
             result = strToNum(ast[2])
+        elseif ast[1] == SIMPLE_VAR then
+            local var = ast[2]
+            result = state.v[var]
+
+            if result == nil then
+                result = 0
+            end
+        elseif ast[1] == BOOLLIT_VAL then
+            local bool = ast[2]
+
+            if bool == "true" then
+                result = 1
+            else 
+                result = 0
+            end
+            
         else
-            print("*** UNIMPLEMENTED EXPRESSION")
+            --print("*** UNIMPLEMENTED EXPRESSION")
             result = 42  -- DUMMY VALUE
         end
 
