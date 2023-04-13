@@ -170,10 +170,10 @@ end
 --            - Value of simple variable xyz is in state.v["xyz"]
 --            - Value of array item xyz[42] is in state.a["xyz"][42]
 --   util   - Table with 3 members, all functions:
---            - incall() inputs line, returns string with no newline
---            - outcall(str) outputs str with no added newline
+--            - util.input() inputs line, returns string with no newline
+--            - util.output(str) outputs str with no added newline
 --              To print a newline, do outcall("\n")
---            - random(n), for an integer n, returns a pseudorandom
+--            - util.random(n), for an integer n, returns a pseudorandom
 --              integer from 0 to n-1, or 0 if n < 2.
 -- Return Value:
 --   state, updated with changed variable values
@@ -286,8 +286,7 @@ function interpit.interp(ast, state, util)
             state.v["return"] = val 
 
         else
-            --print("*** UNIMPLEMENTED STATEMENT:")
-            --print(astToStr(ast[1]))
+            -- Invalid statement is not interpreted
         end
     end
 
@@ -300,6 +299,8 @@ function interpit.interp(ast, state, util)
 
         if ast[1] == NUMLIT_VAL then
             result = strToNum(ast[2])
+         
+         -- Evaluate simple variables
         elseif ast[1] == SIMPLE_VAR then
             local var = ast[2]
             result = state.v[var]
@@ -307,6 +308,8 @@ function interpit.interp(ast, state, util)
             if result == nil then
                 result = 0
             end
+         
+         -- Evaluate Array variables
         elseif ast[1] == ARRAY_VAR then
             local var = ast[2]
             local index = eval_expr(ast[3])
@@ -318,7 +321,8 @@ function interpit.interp(ast, state, util)
             else
                 result = state.a[var][index]
             end
-            
+         
+         -- Evaluate Boolean variables
         elseif ast[1] == BOOLLIT_VAL then
             local bool = ast[2]
 
@@ -327,7 +331,8 @@ function interpit.interp(ast, state, util)
             else 
                 result = 0
             end
-            
+         
+         -- Evaluate function calls as an expression
         elseif ast[1] == FUNC_CALL then
             local funcname = ast[2]
             local funcbody = state.f[funcname]
@@ -343,20 +348,23 @@ function interpit.interp(ast, state, util)
                 result = 0
             end    
             
+         -- Evaluate Read Calls
         elseif ast[1] == READ_CALL then
             local val = util.input()
             result = strToNum(val)
             
+         -- Evaluate Read Calls
         elseif ast[1] == RAND_CALL then
             local val = eval_expr(ast[2])
             result = util.random(val)
             
+         -- Evaluate Binary Operators
         elseif ast[1][1] == BIN_OP then
             local op = ast[1][2]
             local lhs = eval_expr(ast[2])
             local rhs = eval_expr(ast[3])
 
-            -- Arith OP
+            -- Arithmetic OP
             if op == "+" then
                 result = lhs + rhs
             elseif op == "-" then
@@ -404,14 +412,19 @@ function interpit.interp(ast, state, util)
                     result = 1
                 end
             end
+         
+         -- Evaluate Unary Operators
         elseif ast[1][1] == UN_OP then
             local op = ast[1][2]
             local val = eval_expr(ast[2])
-
+             
+             -- Arithmetic OP
             if op == "+" then
                 result = val
             elseif op == "-" then
                 result = -val
+             
+             -- Bool OP
             elseif op == "not" then
                 if val == 0 then 
                     result = 1
@@ -421,8 +434,7 @@ function interpit.interp(ast, state, util)
             end
             
         else
-            --print("*** UNIMPLEMENTED EXPRESSION")
-            result = 0  -- DUMMY VALUE
+            -- Invalid Expression not Evaluated
         end
 
         return result
