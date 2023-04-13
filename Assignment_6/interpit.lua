@@ -215,7 +215,7 @@ function interpit.interp(ast, state, util)
                         char = 0
                     end
                     
-                    util.output(numToStr(char))
+                    util.output(string.char(char))
                 else  -- Expression
                     local val = eval_expr(ast[i])
                     util.output(numToStr(val))
@@ -311,7 +311,12 @@ function interpit.interp(ast, state, util)
             else 
                 result = 0
             end
-                    
+        elseif ast[1] == READ_CALL then
+            local val = util.input()
+            result = strToNum(val)
+            
+--        elseif ast[1] == BIN_OP then
+                            
         else
             --print("*** UNIMPLEMENTED EXPRESSION")
             result = 42  -- DUMMY VALUE
