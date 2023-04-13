@@ -327,7 +327,21 @@ function interpit.interp(ast, state, util)
             else 
                 result = 0
             end
-        
+            
+        elseif ast[1] == FUNC_CALL then
+            local funcname = ast[2]
+            local funcbody = state.f[funcname]
+            if funcbody == nil then
+                funcbody = { STMT_LIST }
+            end
+            
+            interp_stmt_list(funcbody)
+
+            if state.v["return"] ~= nil then
+                result = state.v["return"]
+            else
+                result = 0
+            end    
             
         elseif ast[1] == READ_CALL then
             local val = util.input()
@@ -335,7 +349,7 @@ function interpit.interp(ast, state, util)
             
         elseif ast[1] == RAND_CALL then
             local val = eval_expr(ast[2])
-            result = util.rand(val)
+            result = util.random(val)
             
         elseif ast[1][1] == BIN_OP then
             local op = ast[1][2]
