@@ -265,10 +265,18 @@ function interpit.interp(ast, state, util)
                 return
             end
         
-            
---[[        elseif ast[1] == RETURN_STMT then
+--[[        
+        elseif ast[1] == WHILE_LOOP then
+
+            while eval_expr(ast[2]) ~= 0 do
+                interp_stmt_list(ast[3])
+            end
+--]]            
+                        
+        elseif ast[1] == RETURN_STMT then
             local val = eval_expr(ast[2])
-            state.v["return"] = val --]]
+            state.v["return"] = val 
+
         else
             --print("*** UNIMPLEMENTED STATEMENT:")
             --print(astToStr(ast[1]))
@@ -314,12 +322,81 @@ function interpit.interp(ast, state, util)
         elseif ast[1] == READ_CALL then
             local val = util.input()
             result = strToNum(val)
+        elseif ast[1] == RAND_CALL then
+            local val = eval_expr(ast[2])
+            result = util.rand(val)
+        elseif ast[1][1] == BIN_OP then
+            local op = ast[1][2]
+            local lhs = eval_expr(ast[2])
+            local rhs = eval_expr(ast[3])
+
+            -- Arith OP
+            if op == "+" then
+                result = lhs + rhs
+            elseif op == "-" then
+                result = lhs - rhs
+            elseif op == "*" then
+                result = lhs * rhs
+            elseif op == "/" then
+                if rhs == 0 then
+                    result = 0
+                else
+                    result = numToInt(lhs/rhs)
+                end
+            elseif op == "%" then
+                if rhs == 0 then
+                    result = 0
+                else
+                    result = lhs % rhs
+                end
+
+            -- Comparison OP
+            elseif op == "==" then
+                result = boolToInt(lhs == rhs)
+            elseif op == "!=" then
+                result = boolToInt(lhs ~= rhs)
+            elseif op == "<=" then
+                result = boolToInt(lhs <= rhs)
+            elseif op == ">=" then
+                result = boolToInt(lhs >= rhs)
+            elseif op == "<" then
+                result = boolToInt(lhs < rhs)
+            elseif op == ">" then
+                result = boolToInt(lhs > rhs)
+
+            -- Bool OP
+            elseif op == "and" then
+                if lhs == 0 or rhs == 0 then
+                    result = 0
+                else
+                    result = 1
+                end
+            elseif op == "or" then
+                if lhs == 0 and rhs == 0 then
+                    result = 0
+                else
+                    result = 1
+                end
+            end
+        elseif ast[1][1] == UN_OP then
+            local op = ast[1][2]
+            local val = eval_expr(ast[2])
+
+            if op == "+" then
+                result = val
+            elseif op == "-" then
+                result = -val
+            elseif op == "not" then
+                if val == 0 then 
+                    result = 1
+                else 
+                    result = 0
+                end
+            end
             
---        elseif ast[1] == BIN_OP then
-                            
         else
             --print("*** UNIMPLEMENTED EXPRESSION")
-            result = 42  -- DUMMY VALUE
+            result = 0  -- DUMMY VALUE
         end
 
         return result
