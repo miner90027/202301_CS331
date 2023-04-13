@@ -249,9 +249,26 @@ function interpit.interp(ast, state, util)
 
                 state.a[var][index] = val
             end
+        elseif ast[1] == IF_STMT then
+            local endPt = false
+
+            for index = 2, #ast-1, 2 do
+                if eval_expr(ast[index]) ~= 0 then
+                    interp_stmt_list(ast[index+1])
+                    endPt = true
+                    break
+                end
+            end
+
+            if (not endPt) and (#ast % 2 == 0) then
+                interp_stmt_list(ast[#ast])
+                return
+            end
+        
             
-        elseif ast[1] == RETURN_STMT then
-            --print("###   RETURN_STMT")
+--[[        elseif ast[1] == RETURN_STMT then
+            local val = eval_expr(ast[2])
+            state.v["return"] = val --]]
         else
             --print("*** UNIMPLEMENTED STATEMENT:")
             --print(astToStr(ast[1]))
@@ -274,6 +291,18 @@ function interpit.interp(ast, state, util)
             if result == nil then
                 result = 0
             end
+        elseif ast[1] == ARRAY_VAR then
+            local var = ast[2]
+            local index = eval_expr(ast[3])
+
+            if state.a[var] == nil then
+                result = 0
+            elseif state.a[var][index] == nil then
+                result = 0
+            else
+                result = state.a[var][index]
+            end
+            
         elseif ast[1] == BOOLLIT_VAL then
             local bool = ast[2]
 
@@ -282,7 +311,7 @@ function interpit.interp(ast, state, util)
             else 
                 result = 0
             end
-            
+                    
         else
             --print("*** UNIMPLEMENTED EXPRESSION")
             result = 42  -- DUMMY VALUE
