@@ -5,7 +5,7 @@
   - Spring 2023 CS 331
   - Assignment 7 Exercise 2
   -   The same thing as the collatzCounts function from
-  -      Assignment 5, but this time writen in Forth
+  -      Assignment 5, but this time written in Forth
   - )
 
 \ collcount
